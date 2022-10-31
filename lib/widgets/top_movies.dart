@@ -1,9 +1,9 @@
-import 'package:articleMovieApp/bloc/get_movies_bloc.dart';
-import 'package:articleMovieApp/model/movie.dart';
-import 'package:articleMovieApp/model/movie_response.dart';
+import 'package:article_movie_app/bloc/get_movies_bloc.dart';
+import 'package:article_movie_app/model/movie.dart';
+import 'package:article_movie_app/model/movie_response.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:articleMovieApp/style/theme.dart' as Style;
+import 'package:article_movie_app/style/theme.dart' as Style;
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class TopMovies extends StatefulWidget {
@@ -40,11 +40,10 @@ class _TopMoviesState extends State<TopMovies> {
             stream: moviesBloc.subject.stream,
             builder: (context, AsyncSnapshot<MovieResponse> snapshot) {
               if (snapshot.hasData) {
-                if (snapshot.data.error != null &&
-                    snapshot.data.error.length > 0) {
-                  return _buildErrorWidget(snapshot.data.error);
+                if (snapshot.data!.error.length > 0) {
+                  return _buildErrorWidget(snapshot.data!.error);
                 }
-                return _buildMoviesWidget(snapshot.data);
+                return _buildMoviesWidget(snapshot.data!);
               } else if (snapshot.hasError) {
                 return _buildErrorWidget(snapshot.error);
               } else {
@@ -72,14 +71,16 @@ class _TopMoviesState extends State<TopMovies> {
     ));
   }
 
-  Widget _buildErrorWidget(String error) {
+  Widget _buildErrorWidget(Object? error) {
+    final text = error is String ? error : 'An error has ocurred';
     return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Error occured: $text"),
+        ],
+      ),
+    );
   }
 
   Widget _buildMoviesWidget(MovieResponse data) {
@@ -102,7 +103,7 @@ class _TopMoviesState extends State<TopMovies> {
           ],
         ),
       );
-    } else
+    } else {
       return SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(10.0),
@@ -111,6 +112,8 @@ class _TopMoviesState extends State<TopMovies> {
             shrinkWrap: true,
             itemCount: movies.length,
             itemBuilder: (context, index) {
+              final poster = movies[index].poster;
+
               return Padding(
                 padding: EdgeInsets.only(
                     top: 10.0, bottom: 10.0, right: 5.0, left: 5.0),
@@ -127,7 +130,7 @@ class _TopMoviesState extends State<TopMovies> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      movies[index].poster == null
+                      poster == null
                           ? Container(
                               decoration: new BoxDecoration(
                                 color: Style.Colors.secondColor,
@@ -156,7 +159,7 @@ class _TopMoviesState extends State<TopMovies> {
                                     fit: BoxFit.cover,
                                     image: NetworkImage(
                                         "https://image.tmdb.org/t/p/w200/" +
-                                            movies[index].poster)),
+                                            poster)),
                               )),
                       SizedBox(
                         height: 10.0,
@@ -188,7 +191,7 @@ class _TopMoviesState extends State<TopMovies> {
                           SizedBox(
                             width: 5.0,
                           ),
-                          RatingBar(
+                          RatingBar.builder(
                             itemSize: 8.0,
                             initialRating: movies[index].rating / 2,
                             minRating: 1,
@@ -214,5 +217,6 @@ class _TopMoviesState extends State<TopMovies> {
           ),
         ),
       );
+    }
   }
 }

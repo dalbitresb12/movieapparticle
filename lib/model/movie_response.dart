@@ -1,4 +1,4 @@
-import 'package:articleMovieApp/model/movie.dart';
+import 'package:article_movie_app/model/movie.dart';
 
 class MovieResponse {
   final List<Movie> movies;
@@ -13,6 +13,6 @@ class MovieResponse {
         error = "";
 
   MovieResponse.withError(String errorValue)
-      : movies = List(),
+      : movies = [],
         error = errorValue;
 }

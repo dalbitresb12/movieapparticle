@@ -1,4 +1,4 @@
-import 'package:articleMovieApp/model/movie_response.dart';
+import 'package:article_movie_app/model/movie_response.dart';
 import 'package:dio/dio.dart';
 
 class MovieRepository {

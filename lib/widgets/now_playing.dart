@@ -1,8 +1,8 @@
-import 'package:articleMovieApp/bloc/get_movies_bloc.dart';
-import 'package:articleMovieApp/model/movie.dart';
-import 'package:articleMovieApp/model/movie_response.dart';
+import 'package:article_movie_app/bloc/get_movies_bloc.dart';
+import 'package:article_movie_app/model/movie.dart';
+import 'package:article_movie_app/model/movie_response.dart';
 import 'package:flutter/material.dart';
-import 'package:articleMovieApp/style/theme.dart' as Style;
+import 'package:article_movie_app/style/theme.dart' as Style;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_indicator/page_indicator.dart';
 
@@ -27,10 +27,10 @@ class _NowPlayingState extends State<NowPlaying> {
         stream: moviesBloc.subject.stream,
         builder: (context, AsyncSnapshot<MovieResponse> snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data.error != null && snapshot.data.error.length > 0) {
-              return _buildErrorWidget(snapshot.data.error);
+            if (snapshot.data!.error.length > 0) {
+              return _buildErrorWidget(snapshot.data!.error);
             }
-            return _buildHomeWidget(snapshot.data);
+            return _buildHomeWidget(snapshot.data!);
           } else if (snapshot.hasError) {
             return _buildErrorWidget(snapshot.error);
           } else {
@@ -56,14 +56,16 @@ class _NowPlayingState extends State<NowPlaying> {
     ));
   }
 
-  Widget _buildErrorWidget(String error) {
+  Widget _buildErrorWidget(Object? error) {
+    final text = error is String ? error : 'An error has ocurred';
     return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Error occured: $text"),
+        ],
+      ),
+    );
   }
 
   Widget _buildHomeWidget(MovieResponse data) {
@@ -147,7 +149,7 @@ class _NowPlayingState extends State<NowPlaying> {
                         left: 0.0,
                         right: 0.0,
                         child: Icon(
-                          FontAwesomeIcons.playCircle,
+                          FontAwesomeIcons.circlePlay,
                           color: Style.Colors.secondColor,
                           size: 40.0,
                         )),

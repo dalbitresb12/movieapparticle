@@ -1,4 +1,4 @@
-import 'package:articleMovieApp/pages/home_page.dart';
+import 'package:article_movie_app/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {

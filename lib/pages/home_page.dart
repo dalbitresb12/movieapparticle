@@ -1,11 +1,11 @@
-import 'package:articleMovieApp/bloc/get_movies_bloc.dart';
-import 'package:articleMovieApp/model/movie.dart';
-import 'package:articleMovieApp/model/movie_response.dart';
-import 'package:articleMovieApp/widgets/now_playing.dart';
-import 'package:articleMovieApp/widgets/top_movies.dart';
+import 'package:article_movie_app/bloc/get_movies_bloc.dart';
+import 'package:article_movie_app/model/movie.dart';
+import 'package:article_movie_app/model/movie_response.dart';
+import 'package:article_movie_app/widgets/now_playing.dart';
+import 'package:article_movie_app/widgets/top_movies.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:articleMovieApp/style/theme.dart' as Style;
+import 'package:article_movie_app/style/theme.dart' as Style;
 
 class HomePage extends StatefulWidget {
   @override
@@ -67,14 +67,16 @@ class MovieSearch extends SearchDelegate<String> {
     ));
   }
 
-  Widget _buildErrorWidget(String error) {
+  Widget _buildErrorWidget(Object? error) {
+    final text = error is String ? error : 'An error has ocurred';
     return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Error occured: $text"),
+        ],
+      ),
+    );
   }
 
   @override
@@ -94,12 +96,14 @@ class MovieSearch extends SearchDelegate<String> {
         icon: AnimatedIcon(
             icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
         onPressed: () {
-          close(context, null);
+          close(context, '');
         });
   }
 
   @override
-  Widget buildResults(BuildContext context) {}
+  Widget buildResults(BuildContext context) {
+    return Text('Results...');
+  }
 
   @override
   Widget buildSuggestions(BuildContext context) {
@@ -108,11 +112,10 @@ class MovieSearch extends SearchDelegate<String> {
         stream: moviesBloc.subject.stream,
         builder: (context, AsyncSnapshot<MovieResponse> snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data.error != null && snapshot.data.error.length > 0) {
-              return _buildErrorWidget(snapshot.data.error);
+            if (snapshot.data!.error.length > 0) {
+              return _buildErrorWidget(snapshot.data!.error);
             }
-
-            return listWidget(snapshot.data);
+            return listWidget(snapshot.data!);
           } else if (snapshot.hasError) {
             return _buildErrorWidget(snapshot.error);
           } else {
@@ -122,12 +125,12 @@ class MovieSearch extends SearchDelegate<String> {
   }
 
   Widget listWidget(MovieResponse data) {
-    final List<Movie> SuggestionList = query.isEmpty
+    final List<Movie> suggestionList = query.isEmpty
         ? data.movies.take(10).toList()
         : data.movies.where((q) => q.title.startsWith(query)).toList();
 
     return ListView.builder(
-        itemCount: SuggestionList.length,
+        itemCount: suggestionList.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
@@ -144,7 +147,7 @@ class MovieSearch extends SearchDelegate<String> {
                 Icons.movie,
                 color: Style.Colors.secondColor,
               ),
-              title: Text(SuggestionList[index].title),
+              title: Text(suggestionList[index].title),
             ),
           );
         });

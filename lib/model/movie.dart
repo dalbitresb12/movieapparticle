@@ -3,7 +3,7 @@ class Movie {
   final double popularity;
   final String title;
   final String backPoster;
-  final String poster;
+  final String? poster;
   final String overview;
   final double rating;
 
